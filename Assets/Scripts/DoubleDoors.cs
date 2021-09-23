@@ -6,14 +6,14 @@ public class DoubleDoors : MonoBehaviour
 {
     public GameObject leftDoor;
     public GameObject rightDoor;
+    public AudioSource leftDoorSound;
+    public AudioSource rightDoorSound;
     private float leftOpenPos;
     private float rightOpenPos;
     private float leftClosedPos;
     private float rightClosedPos;
     private bool doorOpen;
-    private int speed;
-    private float myLeftX;
-    private float myRightX;
+    private float speed = 1.75f;
 
     // Start is called before the first frame update
     void Start()
@@ -22,15 +22,31 @@ public class DoubleDoors : MonoBehaviour
         rightClosedPos = rightDoor.transform.position.x;
         leftOpenPos = leftClosedPos - leftDoor.transform.localScale.x;
         rightOpenPos = rightClosedPos + rightDoor.transform.localScale.x;
+        leftDoorSound.Stop();
+        rightDoorSound.Stop();
     }
 
     public void OnTriggerEnter(Collider other)
     {
+        if (doorOpen == false)
+        {
+            rightDoorSound.Stop();
+            leftDoorSound.Stop();
+        }
         doorOpen = true;
+        rightDoorSound.Play();
+        leftDoorSound.Play();
     }
     public void OnTriggerExit(Collider other)
     {
+        if (doorOpen == true)
+        {
+            rightDoorSound.Stop();
+            leftDoorSound.Stop();
+        }
         doorOpen = false;
+        rightDoorSound.Play();
+        leftDoorSound.Play();
     }
 
     // Update is called once per frame
@@ -39,44 +55,25 @@ public class DoubleDoors : MonoBehaviour
         Debug.Log(doorOpen);
         if (doorOpen == true)
         {
-            
-            if (leftDoor.transform.position.x <= leftOpenPos)
+            if (leftDoor.transform.position.x >= leftOpenPos)
             {
-                //stop
+                leftDoor.transform.Translate(-(speed * Time.deltaTime), 0f, 0f, Space.Self);
             }
-            else
+            if (rightDoor.transform.position.x <= rightOpenPos)
             {
-                leftDoor.transform.Translate(Vector3.left * Time.deltaTime, Space.Self);
-            }
-            if (rightDoor.transform.position.x >= rightOpenPos)
-            {
-                //stop
-            }
-            else
-            {
-                rightDoor.transform.Translate(Vector3.right * Time.deltaTime, Space.Self);
+                rightDoor.transform.Translate(speed * Time.deltaTime, 0f, 0f, Space.Self);
             }
         }
         if (doorOpen == false)
         {
-            if (leftDoor.transform.position.x >= leftClosedPos)
+            if (leftDoor.transform.position.x <= leftClosedPos)
             {
-                //stop
+                leftDoor.transform.Translate(speed * Time.deltaTime, 0f, 0f, Space.Self);
             }
-            else
+            if (rightDoor.transform.position.x >= rightClosedPos)
             {
-                leftDoor.transform.Translate(Vector3.right * Time.deltaTime, Space.Self);
-            }
-            if (rightDoor.transform.position.x <= rightClosedPos)
-            {
-                //stop
-            }
-            else
-            {
-                rightDoor.transform.Translate(Vector3.left * Time.deltaTime, Space.Self);
+                rightDoor.transform.Translate(-(speed * Time.deltaTime), 0f, 0f, Space.Self);
             }
         }
-        //leftDoor.transform.position = new Vector3(myLeftX, leftDoor.transform.position.y, leftDoor.transform.position.z);
-        //rightDoor.transform.position = new Vector3(myRightX, rightDoor.transform.position.y, rightDoor.transform.position.z);
     }
 }
